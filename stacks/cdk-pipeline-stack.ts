@@ -15,16 +15,31 @@ export class CdkPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    const branch = this.node.tryGetContext("branch")
+    const username = this.node.tryGetContext("username")
+    const awsAccountId = this.node.tryGetContext("awsAccountId")
+    const awsRegion = this.node.tryGetContext("awsRegion")
+
     const pipeline = new CodePipeline(this, "pipeline", {
       // enables the pipeline to exist in one account and deploy resources into other accounts
       crossAccountKeys: true,
-      pipelineName: "pipeline",
+      pipelineName: `${username}/${branch}-pipeline`,
       synth: new ShellStep("Synth", {
-        input: CodePipelineSource.gitHub("joshdirkx/typescript-cdk-pipeline", "main"),
+        input: CodePipelineSource.gitHub("joshdirkx/typescript-cdk-pipeline", branch),
+        env: {
+          BRANCH: branch,
+          USERNAME: username,
+          AWS_ACCOUNT_ID: awsAccountId,
+          AWS_REGION: awsRegion,
+        },
         commands: [
           "npm ci",
           "npm run build",
-          "npx cdk synth",
+          "npx cdk synth -c \
+            branch=$BRANCH \
+            username=$USERNAME \
+            awsAccountId=$AWS_ACCOUNT_ID \
+            awsRegion=$AWS_REGION",
         ],
       }),
     });
@@ -37,8 +52,8 @@ export class CdkPipelineStack extends cdk.Stack {
 
     const production = new LambdaStage(this, "production", {
       env: {
-        account: "245824979453",
-        region: "us-west-2",
+        account: awsAccountId,
+        region: awsRegion,
       },
     });
 
@@ -47,11 +62,11 @@ export class CdkPipelineStack extends cdk.Stack {
       pre: [
         // check for changes to IAM perimssions or Security Group rules
         // auto-approves if no changes, manual approval required for changes
-        new ConfirmPermissionsBroadening("securityCheck", {
+        new ConfirmPermissionsBroadening("securityCheckProductionDeployment", {
           stage: production,
         }),
         // adds a manual approval step before this stage can be deployed
-        new ManualApprovalStep("deploy"),
+        new ManualApprovalStep("deployProduction"),
       ],
     });
 
