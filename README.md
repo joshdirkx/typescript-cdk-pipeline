@@ -70,11 +70,10 @@ The first deployment of the pipeline is manual from your command line, every suc
 To deploy your pipeline, run the follow command
 
 ```bash
-cdk deploy -c \
-  gitHubOrganization=joshdirkx \
-  gitHubRepository=typescript-cdk-pipeline \
-  gitHubBranch=main \
-  username=jdirkx \
-  awsAccountId=245824979453 \
-  awsRegion=us-west-2
+cdk deploy -c username=jdirkx \
+  -c gitHubOrganization=joshdirkx \
+  -c gitHubRepository=typescript-cdk-pipeline \
+  -c gitHubBranch=main \
+  -c awsAccountId=245824979453 \
+  -c awsRegion=us-west-2
 ```

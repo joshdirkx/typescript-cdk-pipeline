@@ -16,15 +16,15 @@ export class CdkPipelineStack extends cdk.Stack {
     super(scope, id, props);
 
     // pull values out of the context command so they can be set to environment variables during the synth step
+    const username = this.node.tryGetContext("username");
     const gitHubOrganization = this.node.tryGetContext("gitHubOrganization");
     const gitHubRepository = this.node.tryGetContext("gitHubRepository");
     const gitHubBranch = this.node.tryGetContext("gitHubBranch");
-    const username = this.node.tryGetContext("username");
     const awsAccountId = this.node.tryGetContext("awsAccountId");
     const awsRegion = this.node.tryGetContext("awsRegion");
 
     // build a prefix to be used for naming resources
-    const prefix = `${username}:${gitHubOrganization}:${gitHubRepository}:${gitHubBranch}`
+    const prefix = `${username}.${gitHubOrganization}.${gitHubRepository}.${gitHubBranch}`
 
     const pipeline = new CodePipeline(this, "pipeline", {
       // enables the pipeline to exist in one account and deploy resources into other accounts
