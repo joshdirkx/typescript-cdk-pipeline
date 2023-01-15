@@ -70,5 +70,11 @@ The first deployment of the pipeline is manual from your command line, every suc
 To deploy your pipeline, run the follow command
 
 ```bash
-cdk deploy
+cdk deploy -c \
+  gitHubOrganization=$GIT_HUB_ORGANIZATION \
+  gitHubRepository=$GIT_HUB_REPOSITORY \
+  gitHubBranch=$GIT_HUB_BRANCH \
+  username=$USERNAME \
+  awsAccountId=$AWS_ACCOUNT_ID \
+  awsRegion=$AWS_REGION
 ```
