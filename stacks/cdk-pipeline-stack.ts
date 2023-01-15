@@ -9,7 +9,6 @@ import {
 import { Construct } from "constructs";
 import { ApplicationEnvironments, ApplicationStage } from "../stages/application-stage";
 import { Topic } from "aws-cdk-lib/aws-sns";
-import { EmailSubscription } from "aws-cdk-lib/aws-sns-subscriptions";
 
 export class CdkPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -96,9 +95,6 @@ export class CdkPipelineStack extends cdk.Stack {
 
     // build a new SNS topic that will transmit state change events for the pipeline
     const topic = new Topic(this, `${prefix}-pipelineTopic`);
-
-    // add an email subscriber
-    topic.addSubscription(new EmailSubscription(`email+${prefix}@domain.com`));
 
     // notify whenever anything happens during the pipeline
     pipeline.pipeline.notifyOnAnyActionStateChange(`${prefix}-pipelineStateChange`, topic)
