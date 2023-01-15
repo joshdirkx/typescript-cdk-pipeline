@@ -15,19 +15,25 @@ export class CdkPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const branch = this.node.tryGetContext("branch")
-    const username = this.node.tryGetContext("username")
-    const awsAccountId = this.node.tryGetContext("awsAccountId")
-    const awsRegion = this.node.tryGetContext("awsRegion")
+    const gitHubOrganization = this.node.tryGetContext("gitHubOrganization");
+    const gitHubRepository = this.node.tryGetContext("gitHubRepository");
+    const gitHubBranch = this.node.tryGetContext("gitHubBranch");
+    const username = this.node.tryGetContext("username");
+    const awsAccountId = this.node.tryGetContext("awsAccountId");
+    const awsRegion = this.node.tryGetContext("awsRegion");
+
+    const prefix = `${username}:${gitHubOrganization}:${gitHubRepository}:${gitHubBranch}`
 
     const pipeline = new CodePipeline(this, "pipeline", {
       // enables the pipeline to exist in one account and deploy resources into other accounts
       crossAccountKeys: true,
-      pipelineName: `${username}/${branch}-pipeline`,
+      pipelineName: `${prefix}-pipeline`,
       synth: new ShellStep("Synth", {
-        input: CodePipelineSource.gitHub("joshdirkx/typescript-cdk-pipeline", branch),
+        input: CodePipelineSource.gitHub(`${gitHubOrganization}/${gitHubRepository}`, gitHubBranch),
         env: {
-          BRANCH: branch,
+          GIT_HUB_ORGANIZATION: gitHubOrganization,
+          GIT_HUB_REPOSITORY: gitHubRepository,
+          GIT_HUB_BRANCH: gitHubBranch,
           USERNAME: username,
           AWS_ACCOUNT_ID: awsAccountId,
           AWS_REGION: awsRegion,
@@ -36,7 +42,9 @@ export class CdkPipelineStack extends cdk.Stack {
           "npm ci",
           "npm run build",
           "npx cdk synth -c \
-            branch=$BRANCH \
+            gitHubOrganization=$GIT_HUB_ORGANIZATION \
+            gitHubRepository=$GIT_HUB_REPOSITORY \
+            gitHubBranch=$GIT_HUB_BRANCH \
             username=$USERNAME \
             awsAccountId=$AWS_ACCOUNT_ID \
             awsRegion=$AWS_REGION",
@@ -45,12 +53,12 @@ export class CdkPipelineStack extends cdk.Stack {
     });
 
     // build a new SNS topic that will transmit state change events for the pipeline
-    const topic = new Topic(this, "pipelineTopic");
+    const topic = new Topic(this, `${prefix}-pipelineTopic`);
 
     // add an email subscriber
-    topic.addSubscription(new EmailSubscription("email@domain.com"));
+    topic.addSubscription(new EmailSubscription(`email+${prefix}@domain.com`));
 
-    const production = new LambdaStage(this, "production", {
+    const production = new LambdaStage(this, `${prefix}-lambda`, {
       env: {
         account: awsAccountId,
         region: awsRegion,
@@ -74,9 +82,9 @@ export class CdkPipelineStack extends cdk.Stack {
     pipeline.buildPipeline();
 
     // notify whenever anything happens during the pipeline
-    pipeline.pipeline.notifyOnAnyActionStateChange("pipelineStateChange", topic)
-    pipeline.pipeline.notifyOnAnyManualApprovalStateChange("pipelineManualApprovalStateChange", topic)
-    pipeline.pipeline.notifyOnAnyStageStateChange("pipelineStageStateChange", topic)
-    pipeline.pipeline.notifyOnExecutionStateChange("pipelineExecutionStateChange", topic)
+    pipeline.pipeline.notifyOnAnyActionStateChange(`${prefix}-pipelineStateChange`, topic)
+    pipeline.pipeline.notifyOnAnyManualApprovalStateChange(`${prefix}-pipelineManualApprovalStateChange`, topic)
+    pipeline.pipeline.notifyOnAnyStageStateChange(`${prefix}-pipelineStageStateChange`, topic)
+    pipeline.pipeline.notifyOnExecutionStateChange(`${prefix}-pipelineExecutionStateChange`, topic)
   };
 };
