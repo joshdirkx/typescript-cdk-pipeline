@@ -7,7 +7,7 @@ import {
   ShellStep,
 } from "aws-cdk-lib/pipelines";
 import { Construct } from "constructs";
-import { LambdaStage } from "../stages/lambda-stage";
+import { ApplicationStage } from "../stages/application-stage";
 import { Topic } from "aws-cdk-lib/aws-sns";
 import { EmailSubscription } from "aws-cdk-lib/aws-sns-subscriptions";
 
@@ -59,14 +59,14 @@ export class CdkPipelineStack extends cdk.Stack {
     // add an email subscriber
     topic.addSubscription(new EmailSubscription(`email+${prefix}@domain.com`));
 
-    const staging = new LambdaStage(this, `${prefix}-lambdaStaging`, {
+    const staging = new ApplicationStage(this, `${prefix}-lambdaStaging`, {
       env: {
         account: awsAccountId,
         region: awsRegion,
       },
     });
 
-    const production = new LambdaStage(this, `${prefix}-lambdaProduction`, {
+    const production = new ApplicationStage(this, `${prefix}-lambdaProduction`, {
       env: {
         account: awsAccountId,
         region: awsRegion,

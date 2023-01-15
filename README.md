@@ -61,7 +61,7 @@ To setup the resources, modify `stacks/cdk-pipeline-stack.ts` with the AWS accou
 
 In addition, the repository will need to be updated in `stacks/cdk-pipeline-stack.ts` to point the new location it was forked into.
 
-Commit your changes to GitHub.
+Commit and push your changes to GitHub.
 
 ### First Deployment
 
