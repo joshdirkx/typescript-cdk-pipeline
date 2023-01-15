@@ -24,7 +24,7 @@ export class CdkPipelineStack extends cdk.Stack {
     const awsRegion = this.node.tryGetContext("awsRegion");
 
     // build a prefix to be used for naming resources
-    const prefix = `${username}.${gitHubOrganization}.${gitHubRepository}.${gitHubBranch}`
+    const prefix = `${username}-${gitHubOrganization}-${gitHubRepository}-${gitHubBranch}`
 
     const pipeline = new CodePipeline(this, "pipeline", {
       // enables the pipeline to exist in one account and deploy resources into other accounts
