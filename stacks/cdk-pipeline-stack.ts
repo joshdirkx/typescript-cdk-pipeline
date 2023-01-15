@@ -63,7 +63,7 @@ export class CdkPipelineStack extends cdk.Stack {
     });
 
     // declare a production stage of the application
-    const production = new ApplicationStage(this, `${prefix}-application-${ApplicationEnvironments.staging}`, {
+    const production = new ApplicationStage(this, `${prefix}-application-${ApplicationEnvironments.production}`, {
       stageName: ApplicationEnvironments.production,
       env: {
         account: awsAccountId,
