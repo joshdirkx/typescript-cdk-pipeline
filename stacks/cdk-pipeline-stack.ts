@@ -79,8 +79,8 @@ export class CdkPipelineStack extends cdk.Stack {
       pre: [
         // check for changes to IAM perimssions or Security Group rules
         // auto-approves if no changes, manual approval required for changes
-        new ConfirmPermissionsBroadening("securityCheckProductionDeployment", {
-          stage: production,
+        new ConfirmPermissionsBroadening("securityCheck", {
+          stage: staging,
         }),
       ],
     });
