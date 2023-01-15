@@ -41,6 +41,7 @@ export class CdkPipelineStack extends cdk.Stack {
           AWS_REGION: awsRegion,
         },
         commands: [
+          "cd cdk",
           "npm ci",
           "npm run build",
           "npx cdk synth -c username=$USERNAME \
