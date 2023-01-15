@@ -4,7 +4,7 @@
 
 ## What is in this repository?
 
-In this repository you will find a slim CDK Pipeline that deploys an AWS Lambda function. In addition, there is an SNS Topic that will receive all state change events from the pipeline and broadcast them to subscribers.
+In this repository you will find a slim CDK Pipeline that deploys an AWS Lambda function to two environments - staging and production. Before the staging deploy, there is a security check. Before the production deploy, there is a manual approval required. In addition, there is an SNS Topic that will receive all state change events from the pipeline and broadcast them to subscribers.
 
 ## Requirements
 
@@ -70,6 +70,8 @@ The first deployment of the pipeline is manual from your command line, every suc
 To deploy your pipeline, run the follow command
 
 ```bash
+PIPELINE_AWS_ACCOUNT_ID=476136583399 \
+PIPELINE_AWS_REGION=us-west-2 \
 cdk deploy -c username=jdirkx \
   -c gitHubOrganization=joshdirkx \
   -c gitHubRepository=typescript-cdk-pipeline \
