@@ -1,14 +1,15 @@
-# Welcome to your CDK TypeScript project
+# Building a CI/CD Pipeline with AWS CDK
 
-This is a blank project for CDK development with TypeScript.
+[AWS Cloud Development Kit (AWS CDK)](https://aws.amazon.com/cdk/) is a framework used to define cloud infrastructure as code and provision it via [AWS CloudFormation](https://aws.amazon.com/cloudformation/).
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+## What is in this repository?
 
-## Useful commands
+In this repository you will find a slim CDK Pipeline that deploys an AWS Lambda function. In addition, there is an SNS Topic that will receive all state change events from the Pipeline and broadcast them to subscribers.
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
-* `cdk deploy`      deploy this stack to your default AWS account/region
-* `cdk diff`        compare deployed stack with current state
-* `cdk synth`       emits the synthesized CloudFormation template
+## Requirements
+
+You will need a GitHub account, AWS CDK version 2.60.0 or later, and at least one AWS account.
+
+## Getting Started
+
+Create a GitHub Personal Access Token and store that value as a plain text secret in AWS Secrets Manager using the name `github-token`. This token will need the scopes `repo` and `admin:repo_hook`.
