@@ -15,6 +15,7 @@ export class CdkPipelineStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
+    // pull values out of the context command so they can be set to environment variables during the synth step
     const gitHubOrganization = this.node.tryGetContext("gitHubOrganization");
     const gitHubRepository = this.node.tryGetContext("gitHubRepository");
     const gitHubBranch = this.node.tryGetContext("gitHubBranch");
@@ -22,13 +23,14 @@ export class CdkPipelineStack extends cdk.Stack {
     const awsAccountId = this.node.tryGetContext("awsAccountId");
     const awsRegion = this.node.tryGetContext("awsRegion");
 
+    // build a prefix to be used for naming resources
     const prefix = `${username}:${gitHubOrganization}:${gitHubRepository}:${gitHubBranch}`
 
     const pipeline = new CodePipeline(this, "pipeline", {
       // enables the pipeline to exist in one account and deploy resources into other accounts
       crossAccountKeys: true,
       pipelineName: `${prefix}-pipeline`,
-      synth: new ShellStep("Synth", {
+      synth: new ShellStep("synth", {
         input: CodePipelineSource.gitHub(`${gitHubOrganization}/${gitHubRepository}`, gitHubBranch),
         env: {
           GIT_HUB_ORGANIZATION: gitHubOrganization,
@@ -58,21 +60,34 @@ export class CdkPipelineStack extends cdk.Stack {
     // add an email subscriber
     topic.addSubscription(new EmailSubscription(`email+${prefix}@domain.com`));
 
-    const production = new LambdaStage(this, `${prefix}-lambda`, {
+    const staging = new LambdaStage(this, `${prefix}-lambdaStaging`, {
       env: {
         account: awsAccountId,
         region: awsRegion,
       },
     });
 
-    // add a stage to the pipeline for a production environment, which creates a simple Lambda function
-    pipeline.addStage(production, {
+    const production = new LambdaStage(this, `${prefix}-lambdaProduction`, {
+      env: {
+        account: awsAccountId,
+        region: awsRegion,
+      },
+    });
+
+    // add a stage to the pipeline for a production environment
+    pipeline.addStage(staging, {
       pre: [
         // check for changes to IAM perimssions or Security Group rules
         // auto-approves if no changes, manual approval required for changes
         new ConfirmPermissionsBroadening("securityCheckProductionDeployment", {
           stage: production,
         }),
+      ],
+    });
+
+    // add a stage to the pipeline for a production environment
+    pipeline.addStage(production, {
+      pre: [
         // adds a manual approval step before this stage can be deployed
         new ManualApprovalStep("deployProduction"),
       ],
