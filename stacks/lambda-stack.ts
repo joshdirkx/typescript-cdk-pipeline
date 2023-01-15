@@ -46,7 +46,7 @@ export class LambdaStack extends cdk.Stack {
       metric: new Metric({
         metricName: "lambdaErrors",
         namespace: "aws/lambda",
-        // observe the sum total of errors of some interval of time
+        // observe the sum total of errors over some interval of time
         statistic: "sum",
         dimensionsMap: {
           Resource: `${lambdaFunction.functionName}:${lambdaAlias.aliasName}:${lambdaFunction.currentVersion}`,
