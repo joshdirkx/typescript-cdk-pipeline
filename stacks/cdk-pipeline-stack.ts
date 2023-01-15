@@ -43,13 +43,12 @@ export class CdkPipelineStack extends cdk.Stack {
         commands: [
           "npm ci",
           "npm run build",
-          "npx cdk synth -c \
-            gitHubOrganization=$GIT_HUB_ORGANIZATION \
-            gitHubRepository=$GIT_HUB_REPOSITORY \
-            gitHubBranch=$GIT_HUB_BRANCH \
-            username=$USERNAME \
-            awsAccountId=$AWS_ACCOUNT_ID \
-            awsRegion=$AWS_REGION",
+          "npx cdk synth -c username=$USERNAME \
+            -c gitHubOrganization=$GIT_HUB_ORGANIZATION \
+            -c gitHubRepository=$GIT_HUB_REPOSITORY \
+            -c gitHubBranch=$GIT_HUB_BRANCH \
+            -c awsAccountId=$AWS_ACCOUNT_ID \
+            -c awsRegion=$AWS_REGION",
         ],
       }),
     });
