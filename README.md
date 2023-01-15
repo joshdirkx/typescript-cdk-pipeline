@@ -71,10 +71,10 @@ To deploy your pipeline, run the follow command
 
 ```bash
 cdk deploy -c \
-  gitHubOrganization=$GIT_HUB_ORGANIZATION \
-  gitHubRepository=$GIT_HUB_REPOSITORY \
-  gitHubBranch=$GIT_HUB_BRANCH \
-  username=$USERNAME \
-  awsAccountId=$AWS_ACCOUNT_ID \
-  awsRegion=$AWS_REGION
+  gitHubOrganization=joshdirkx \
+  gitHubRepository=typescript-cdk-pipeline \
+  gitHubBranch=main \
+  username=jdirkx \
+  awsAccountId=245824979453 \
+  awsRegion=us-west-2
 ```
