@@ -43,6 +43,7 @@ export class CdkPipelineStack extends cdk.Stack {
         commands: [
           "npm ci",
           "npm run build",
+          // sets the environments variables to context variables
           "npx cdk synth -c username=$USERNAME \
             -c gitHubOrganization=$GIT_HUB_ORGANIZATION \
             -c gitHubRepository=$GIT_HUB_REPOSITORY \
@@ -53,13 +54,8 @@ export class CdkPipelineStack extends cdk.Stack {
       }),
     });
 
-    // build a new SNS topic that will transmit state change events for the pipeline
-    const topic = new Topic(this, `${prefix}-pipelineTopic`);
-
-    // add an email subscriber
-    topic.addSubscription(new EmailSubscription(`email+${prefix}@domain.com`));
-
-    const staging = new ApplicationStage(this, `${prefix}-lambdaStaging`, {
+    // declare a staging stage of the application
+    const staging = new ApplicationStage(this, `${prefix}-application-${ApplicationEnvironments.staging}`, {
       stageName: ApplicationEnvironments.staging,
       env: {
         account: awsAccountId,
@@ -67,7 +63,8 @@ export class CdkPipelineStack extends cdk.Stack {
       },
     });
 
-    const production = new ApplicationStage(this, `${prefix}-lambdaProduction`, {
+    // declare a production stage of the application
+    const production = new ApplicationStage(this, `${prefix}-application-${ApplicationEnvironments.staging}`, {
       stageName: ApplicationEnvironments.production,
       env: {
         account: awsAccountId,
@@ -96,6 +93,12 @@ export class CdkPipelineStack extends cdk.Stack {
 
     // force the pipeline to build so notifications can be added to it
     pipeline.buildPipeline();
+
+    // build a new SNS topic that will transmit state change events for the pipeline
+    const topic = new Topic(this, `${prefix}-pipelineTopic`);
+
+    // add an email subscriber
+    topic.addSubscription(new EmailSubscription(`email+${prefix}@domain.com`));
 
     // notify whenever anything happens during the pipeline
     pipeline.pipeline.notifyOnAnyActionStateChange(`${prefix}-pipelineStateChange`, topic)

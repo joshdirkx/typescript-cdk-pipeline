@@ -15,21 +15,21 @@ export class LambdaStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
 
-    // create a simple hello world lambda function
+    // create a lambda function from the lambda directory in this repository
     const lambdaFunction = new Function(this, "lambda", {
       code: Code.fromAssetImage(path.join(__dirname, "..", "lambda")),
       handler: Handler.FROM_IMAGE,
       runtime: Runtime.FROM_IMAGE,
     });
 
-    // declare an alias for the latest version of the lambda
-    // this alias is used by CodeDeploy to perform weighted routed of the lambda upon deployment
+    // declare an alias for the latest version of the lambda function
+    // this alias is used by CodeDeploy to perform weighted routing upon deployment
     const lambdaAlias = new Alias(this, "lambdaAlias", {
       aliasName: props.stageName,
       version: lambdaFunction.currentVersion,
     });
 
-    // create a simple rest api from API Gateway
+    // create an API Gateway rest api
     const api = new RestApi(this, "api", {
       deployOptions: {
         stageName: lambdaAlias.aliasName,
