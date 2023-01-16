@@ -5,8 +5,8 @@
 ## What is in this repository?
 
 - Self-mutating CDK CodePipeline emitting state change events to an SNS Topic
-- Application consiting of an API Gateway rest api with one route backed by a Lambda Function to two environments
-- Two environments - staging and production
+- Application consiting of an API Gateway rest api with one route backed by a Lambda Function
+- Deployment to two environments
 - Configurable deployment strategy for the Lambda Function, supporting linear/canary/all at once
 - CloudWatch Alarm that will alert when the sum total of errors is greater than zero over the internal of one minute
 - Permission check for changes to IAM permissions or Security Group rules
