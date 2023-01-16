@@ -78,3 +78,7 @@ cdk deploy -c username=jdirkx \
   -c awsAccountId=245824979453 \
   -c awsRegion=us-west-2
 ```
+
+### Expansion Ideas
+- Add Slack as subscriber of the SNS Topic
+- Allow manual approval steps to be confirmed via Slack
