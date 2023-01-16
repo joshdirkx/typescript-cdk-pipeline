@@ -4,7 +4,14 @@
 
 ## What is in this repository?
 
-Inside ou will find a slim CDK Pipeline that deploys an AWS Lambda function to two environments - staging and production. Before the staging deploy, there is a security check. Before the production deploy, there is a manual approval required. In addition, there is an SNS Topic that will receive all state change events from the pipeline and broadcast them to subscribers.
+- Self-mutating CDK CodePipeline emitting state change events to an SNS Topic
+- Application consiting of an API Gateway rest api with one route backed by a Lambda Function to two environments
+- Two environments - staging and production
+- Configurable deployment strategy for the Lambda Function, supporting linear/canary/all at once
+- CloudWatch Alarm that will alert when the sum total of errors is greater than zero over the internal of one minute
+- Permission check for changes to IAM permissions or Security Group rules
+- Manual approval for production deployment
+
 
 ## Requirements
 
