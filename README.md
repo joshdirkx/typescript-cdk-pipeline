@@ -60,13 +60,7 @@ npx cdk bootstrap \
 
 ### Preparing the Code
 
-There are a few places in this code that you need to modify.
-
-To setup the pipeline itself, modify `bin/cdk-pipeline.ts` with your AWS account identifier and desired region.
-
-To setup the resources, modify `stacks/cdk-pipeline-stack.ts` with the AWS account identifier that you want to deploy resources into and the desired region. If you are using one account, this value will be the same as the previous account identifier. If you are using two accounts, this will be the identifier of your second AWS account.
-
-In addition, the repository will need to be updated in `stacks/cdk-pipeline-stack.ts` to point the new location it was forked into.
+Modify `bin/cdk-pipeline.ts` with your AWS account identifier and desired region.
 
 Commit and push your changes to GitHub.
 
@@ -74,7 +68,7 @@ Commit and push your changes to GitHub.
 
 The first deployment of the pipeline is manual from your command line, every successive change will happen upon commit to the repository.
 
-To deploy your pipeline, run the follow command
+To deploy your pipeline, run the following command
 
 ```bash
 cdk deploy -c username=jdirkx \
