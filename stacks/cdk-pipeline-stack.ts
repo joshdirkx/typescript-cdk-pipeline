@@ -71,7 +71,7 @@ export class CdkPipelineStack extends cdk.Stack {
       },
     });
 
-    // add a stage to the pipeline for a production environment
+    // add a stage to the pipeline for a staging environment
     pipeline.addStage(staging, {
       pre: [
         // check for changes to IAM perimssions or Security Group rules

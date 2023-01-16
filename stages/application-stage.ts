@@ -8,7 +8,7 @@ export enum ApplicationEnvironments {
 }
 
 interface ApplicationStageProps extends cdk.StageProps {
-  stageName: string,
+  stageName: ApplicationEnvironments,
 }
 export class ApplicationStage extends cdk.Stage {
   constructor(scope: Construct, id: string, props: ApplicationStageProps) {

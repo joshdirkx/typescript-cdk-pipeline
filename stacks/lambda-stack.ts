@@ -4,11 +4,12 @@ import { Alias, Code, Function, Handler, Runtime } from "aws-cdk-lib/aws-lambda"
 import { LambdaIntegration, RestApi } from "aws-cdk-lib/aws-apigateway";
 import { LambdaDeploymentConfig, LambdaDeploymentGroup } from "aws-cdk-lib/aws-codedeploy";
 import { Alarm, Metric } from "aws-cdk-lib/aws-cloudwatch";
+import { ApplicationEnvironments } from "../stages/application-stage";
 
 var path = require("path");
 
 interface LambdaStackProps extends cdk.StackProps {
-  stageName: string,
+  stageName: ApplicationEnvironments,
 }
 
 export class LambdaStack extends cdk.Stack {
@@ -62,12 +63,20 @@ export class LambdaStack extends cdk.Stack {
       evaluationPeriods: 0,
     });
 
+    const deploymentConfig = function () {
+      if (lambdaAlias.aliasName == ApplicationEnvironments.staging) {
+        // deploy the new version of the lambda immediately to all traffic
+        return LambdaDeploymentConfig.ALL_AT_ONCE
+      } else {
+        // deploy the new version of the lambda to 10% of traffic immediately then an additional 10% every minute
+        return LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE
+      }
+    }
+
     // create a CodeDeploy Deployment Group
     new LambdaDeploymentGroup(this, "lambdaDeploymentGroup", {
       alias: lambdaAlias,
-      // the selected strategy will deploy the new version of the lambda to 10% of traffic immediately,
-      // then an additional 10% every minute
-      deploymentConfig: LambdaDeploymentConfig.LINEAR_10PERCENT_EVERY_1MINUTE,
+      deploymentConfig: deploymentConfig(),
       alarms: [
         lambdaAlarm,
       ],
